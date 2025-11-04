@@ -15,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     context.read<HomeScreenController>().fetchCategories();
+    context.read<HomeScreenController>().fetchAllpro();
     super.initState();
   }
 
@@ -43,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final fetchhomecategory = context.watch<HomeScreenController>();
+     
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -102,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Icons.search,
                           size: 30,
                         ),
-                         SizedBox(
+                        SizedBox(
                           width: 10,
                         ),
                         Text(
@@ -177,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
               child: GridView.builder(
-            itemCount: 100,
+            itemCount: fetchhomecategory.Allproductlist.length,
             padding: EdgeInsets.all(20),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -204,8 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.grey.withOpacity(.2),
                         image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage(
-                                "https://images.pexels.com/photos/28518049/pexels-photo-28518049/free-photo-of-winter-wonderland-by-a-frozen-river.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"))),
+                            image: NetworkImage(fetchhomecategory
+                                .Allproductlist[index].images![0]))),
                     alignment: Alignment.topRight,
                     child: Container(
                       height: 45,
@@ -221,13 +223,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Text(
                     maxLines: 1,
-                    "title",
+                    "${fetchhomecategory.Allproductlist[index].title}",
                     style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 18),
                   ),
-                  Text("price".toString()),
+                  Text("${fetchhomecategory.Allproductlist[index].price} \$"),
                 ],
               ),
             ),
