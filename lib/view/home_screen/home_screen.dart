@@ -14,8 +14,13 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
-    context.read<HomeScreenController>().fetchCategories();
-    context.read<HomeScreenController>().fetchAllpro();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        await context.read<HomeScreenController>().fetchCategories();
+        context.read<HomeScreenController>().fetchAllpro();
+      },
+    );
+
     super.initState();
   }
 
@@ -44,9 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final fetchhomecategory = context.watch<HomeScreenController>();
-     
+    final fetchindex = context.read<HomeScreenController>();
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Text(
           "Discover",
           style: TextStyle(fontWeight: FontWeight.w800, fontSize: 30),
@@ -84,158 +91,183 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ],
       ),
-      body: Column(
-        children: [
-          // #1
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            child: Row(
+      body: fetchhomecategory.isLoadingcategories
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
               children: [
-                Expanded(
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    height: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.grey.withOpacity(.2)),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          size: 30,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "Search anything",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
-                            color: Colors.grey,
+                // #1
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          height: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.grey.withOpacity(.2)),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                size: 30,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "Search anything",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            ],
                           ),
-                        )
-                      ],
+                        ),
+                      ),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Icon(
+                          Icons.filter_list,
+                          color: Colors.white,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+
+                SizedBox(
+                  height: 16,
+                ),
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: List.generate(
+                        fetchhomecategory.categoryList.length,
+                        (index) => Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: InkWell(
+                            onTap: () {
+                              fetchindex.changeIndex(index);
+                              _scrollToSelectedIndex(index);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 25),
+                              height: 45,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                  color: fetchhomecategory.currentindex == index
+                                      ? Colors.black
+                                      : Colors.grey.withValues(alpha: .2),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Text(
+                                fetchhomecategory.categoryList[index].name
+                                    .toString(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color:
+                                        fetchhomecategory.currentindex == index
+                                            ? Colors.white
+                                            : Colors.black),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(
-                  width: 16,
+                  height: 16,
                 ),
-                Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Icon(
-                    Icons.filter_list,
-                    color: Colors.white,
-                  ),
-                )
+                Expanded(
+                    child: fetchhomecategory.isLoadingproducts
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.red,
+                            ),
+                          )
+                        : GridView.builder(
+                            itemCount: fetchhomecategory.Allproductlist.length,
+                            padding: EdgeInsets.all(20),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 15,
+                              crossAxisSpacing: 15,
+                              mainAxisExtent: 250,
+                            ),
+                            itemBuilder: (context, index) => InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ProductDetailsScreen(),
+                                    ));
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(15),
+                                    height: 200,
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.grey.withOpacity(.2),
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(
+                                                fetchhomecategory
+                                                    .Allproductlist[index]
+                                                    .thumbnail
+                                                    .toString()))),
+                                    alignment: Alignment.topRight,
+                                    child: Container(
+                                      height: 45,
+                                      width: 45,
+                                      decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(.7),
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Icon(
+                                        Icons.favorite_outline,
+                                        size: 30,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    maxLines: 1,
+                                    "${fetchhomecategory.Allproductlist[index].title}",
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18),
+                                  ),
+                                  Text(
+                                      "${fetchhomecategory.Allproductlist[index].price} \$"),
+                                ],
+                              ),
+                            ),
+                          ))
               ],
             ),
-          ),
-
-          SizedBox(
-            height: 16,
-          ),
-          SingleChildScrollView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: List.generate(
-                  fetchhomecategory.categoryList.length,
-                  (index) => Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: InkWell(
-                      onTap: () {
-                        _scrollToSelectedIndex(index);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 25),
-                        height: 45,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(.2),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: Text(
-                          fetchhomecategory.categoryList[index].name.toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: Colors.black),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 16,
-          ),
-          Expanded(
-              child: GridView.builder(
-            itemCount: fetchhomecategory.Allproductlist.length,
-            padding: EdgeInsets.all(20),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              mainAxisSpacing: 15,
-              crossAxisSpacing: 15,
-              mainAxisExtent: 250,
-            ),
-            itemBuilder: (context, index) => InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductDetailsScreen(),
-                    ));
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(15),
-                    height: 200,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Colors.grey.withOpacity(.2),
-                        image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(fetchhomecategory
-                                .Allproductlist[index].images![0]))),
-                    alignment: Alignment.topRight,
-                    child: Container(
-                      height: 45,
-                      width: 45,
-                      decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(.7),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Icon(
-                        Icons.favorite_outline,
-                        size: 30,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    maxLines: 1,
-                    "${fetchhomecategory.Allproductlist[index].title}",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
-                  ),
-                  Text("${fetchhomecategory.Allproductlist[index].price} \$"),
-                ],
-              ),
-            ),
-          ))
-        ],
-      ),
     );
   }
 }

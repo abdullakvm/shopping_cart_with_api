@@ -7,8 +7,10 @@ import 'package:shopping_cart_may/repository/api/home_screen_services.dart';
 
 class HomeScreenController with ChangeNotifier {
   bool isLoadingcategories = false;
+  bool isLoadingproducts = false;
   List<CategoriesResModel> categoryList = [];
   List<Product> Allproductlist = [];
+  int currentindex = 0;
   Future<void> fetchCategories() async {
     isLoadingcategories = true;
     notifyListeners();
@@ -16,6 +18,8 @@ class HomeScreenController with ChangeNotifier {
       final res = await HomeScreenServices().fetchcategories();
       if (res != null) {
         categoryList = res ?? [];
+        categoryList.insert(
+            0, CategoriesResModel(slug: "all", name: "All", url: null));
         isLoadingcategories = false;
         notifyListeners();
       }
@@ -25,22 +29,33 @@ class HomeScreenController with ChangeNotifier {
   }
 
   Future<void> fetchAllpro() async {
-    isLoadingcategories = true;
+    isLoadingproducts = true;
     notifyListeners();
     try {
-      final allres = await HomeScreenServices().fetchAllProducts();
+      String categorySlug = categoryList[currentindex]
+          .slug
+          .toString(); // for taking the slug , slug used for change the category according to current index
+      final allres =
+          await HomeScreenServices().fetchAllProducts(category: categorySlug);
       if (allres != null) {
         Allproductlist = allres.products ?? [];
         isLoadingcategories = false;
         notifyListeners();
-        log(Allproductlist.toString());
+        // log(Allproductlist.toString());
       } else {
         log("error while fetching allproductResponse ");
       }
     } catch (e) {
       print(e.toString());
     }
-    isLoadingcategories = false;
+    isLoadingproducts = false;
+    notifyListeners();
+  }
+
+  changeIndex(int index) {
+    currentindex = index;
+    log(index.toString());
+    fetchAllpro(); // for fetching product with spesific category
     notifyListeners();
   }
 }

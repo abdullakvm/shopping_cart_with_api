@@ -16,8 +16,15 @@ class HomeScreenServices {
     return null;
   }
 
-  Future<AllproductsResModel?> fetchAllProducts() async {
-    final allresbody = await ApiHelper.getDAta(endpoint: "/products");
+  Future<AllproductsResModel?> fetchAllProducts({String? category}) async {
+    String? url;
+    if (category == "all") {
+      url = "/products";
+    } else {
+      url = "/products/category/$category";
+    }
+
+    final allresbody = await ApiHelper.getDAta(endpoint: url);
     if (allresbody != null) {
       final convertedAllres = allproductsResModelFromJson(allresbody);
       return convertedAllres;

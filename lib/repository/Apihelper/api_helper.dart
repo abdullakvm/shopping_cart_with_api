@@ -8,7 +8,7 @@ static  Future<String?> getDAta({required String endpoint}) async {
     try {
       final response = await get(url);
       if (response.statusCode == 200) {
-        log("response data ${response.body}");
+        log("response data arrived");
         return response.body;
       } else {
         log("response didnt get");
