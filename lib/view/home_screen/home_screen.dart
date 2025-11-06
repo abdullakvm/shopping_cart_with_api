@@ -219,7 +219,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          ProductDetailsScreen(),
+                                          ProductDetailsScreen(productid:  fetchhomecategory
+                                                    .Allproductlist[index]
+                                                    .id
+                                                    .toString(),),
                                     ));
                               },
                               child: Column(

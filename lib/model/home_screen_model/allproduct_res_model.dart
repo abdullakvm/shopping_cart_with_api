@@ -8,6 +8,8 @@ AllproductsResModel allproductsResModelFromJson(String str) => AllproductsResMod
 
 String allproductsResModelToJson(AllproductsResModel data) => json.encode(data.toJson());
 
+Product productFromJson(String json) => Product.fromJson(jsonDecode(json));  // for using the productmodel for single product api fetching there is no Allproductresmodel so we use the Product resmodel
+
 class AllproductsResModel {
     List<Product>? products;
     int? total;
