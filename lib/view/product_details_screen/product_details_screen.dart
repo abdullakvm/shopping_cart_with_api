@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_cart_may/controller/cart_screen_controller.dart';
 import 'package:shopping_cart_may/controller/product_details_screen_controller.dart';
 import 'package:shopping_cart_may/view/cart_screen/cart_screen.dart';
 
@@ -110,9 +111,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         SizedBox(height: 20),
                         Text(
-                         "⭐ ${ productDetailsScreenController.response?.rating
-                                  .toString() ??
-                              ""}",
+                          "⭐ ${productDetailsScreenController.response?.rating.toString() ?? ""}",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -160,11 +159,20 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            Navigator.push(
+                            context
+                                .read<CartScreenController>()
+                                .addData(
+                                    productDetailsScreenController.response!)
+                                .then(
+                                  (value) {
+                                    Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => CartScreen(),
                                 ));
+                                  },
+                                );
+                            
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(
