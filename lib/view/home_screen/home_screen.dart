@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shopping_cart_may/controller/cart_screen_controller.dart';
 import 'package:shopping_cart_may/controller/home_screen_controller.dart';
 import 'package:shopping_cart_may/view/cart_screen/cart_screen.dart';
 import 'package:shopping_cart_may/view/product_details_screen/product_details_screen.dart';
@@ -18,6 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
       (timeStamp) async {
         await context.read<HomeScreenController>().fetchCategories();
         context.read<HomeScreenController>().fetchAllpro();
+                await context.read<CartScreenController>().getData();
+
       },
     );
 

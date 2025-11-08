@@ -32,7 +32,9 @@ class SqfliteHelper {
             '${AppConfig.itemQty} INTEGER, '
             '${AppConfig.productImage} TEXT)',
           );
+          
         },
+       
       ),
     );
   }
