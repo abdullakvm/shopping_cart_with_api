@@ -32,16 +32,15 @@ class SqfliteHelper {
             '${AppConfig.itemQty} INTEGER, '
             '${AppConfig.productImage} TEXT)',
           );
-          
         },
-       
       ),
     );
   }
 
   Future<List<Map>> getAllData() async {
     // Get the records
-    List<Map> products = await database.rawQuery('SELECT * FROM ${AppConfig.tableName}');
+    List<Map> products =
+        await database.rawQuery('SELECT * FROM ${AppConfig.tableName}');
     return products;
   }
 
@@ -57,10 +56,18 @@ class SqfliteHelper {
   }
 
   Future<void> updateData({required int qty, required int id}) async {
-    await database.rawUpdate('UPDATE ${AppConfig.tableName} SET ${AppConfig.itemQty}  = ? WHERE ${AppConfig.primaryKey}  = ?', [qty, id]);
+    await database.rawUpdate(
+        'UPDATE ${AppConfig.tableName} SET ${AppConfig.itemQty}  = ? WHERE ${AppConfig.primaryKey}  = ?',
+        [qty, id]);
   }
 
   Future<void> deleteData({required int id}) async {
-    await database.rawDelete('DELETE FROM ${AppConfig.tableName} WHERE ${AppConfig.primaryKey} = ?', [id]);
+    await database.rawDelete(
+        'DELETE FROM ${AppConfig.tableName} WHERE ${AppConfig.primaryKey} = ?',
+        [id]);
+  }
+
+  Future<void> deleteAlldata() async {
+   await database.delete(AppConfig.tableName);
   }
 }

@@ -50,4 +50,9 @@ class CartScreenController with ChangeNotifier {
       totalAmount = totalAmount + currentPrice;
     }
   }
+
+  void deleteAlldata() {
+    SqfliteHelper().deleteAlldata();
+    getData();
+  }
 }
